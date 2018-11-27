@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.board.web.board.BoardMapper">
+<resultMap type="map" id="board">
+	<result property="num" column="NUM"/>
+	<result property="title" column="TITLE"/>
+	<result property="content" column="CONTENT"/>
+	<result property="writer" column="WRITER"/>
+	<result property="pw" column="PW"/>
+	<result property="regidate" column="REGIDATE"/>
+</resultMap>
+
+<insert id="createBoard">
+	INSERT INTO T_BOARD (TITLE, CONTENT, WRITER, PW) 
+	VALUES (#{title}, #{content} ,#{writer},#{pw});
+</insert>
+<select id="list" resultMap="board">
+	SELECT * FROM (
+		SELECT @ROWNUM:=@ROWNUM+1 as ROWNUM, A.*
+		FROM T_BOARD A, (SELECT @ROWNUM:=0) R
+		ORDER BY NUM DESC
+		) T
+	WHERE ROWNUM BETWEEN #{beginRow} AND #{endRow}
+	
+</select>
+<select id="count" resultType="int">
+	SELECT COUNT(*)  
+	FROM T_BOARD  
+</select>
+</mapper>
