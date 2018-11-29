@@ -21,23 +21,18 @@ public class BoardController {
 	@Autowired BoardMapper mapper;
 	@Autowired Pagination pagination;
 	
-	@GetMapping("/list/{pageNo}")
-	public Map<String,Object> list(@PathVariable String pageNo) {
+	@GetMapping("/list/{pageNo}/{keyword}")
+	public Map<String,Object> listBoard(@PathVariable String pageNo,
+			@PathVariable String keyword) {
 		logger.info(" list() 진입 ");
 		Map<String,Object> map = new HashMap<>();
 		
 		map.put("pageNo", pageNo);
-		logger.info(" pageNo: "+map.get("pageNo"));
+		map.put("keyword", keyword);
 		
 		//페이지네이션
-		logger.info("페이지네이션");
 		pagination.excute(map);
-		
-		map.put("list", mapper.list(map));
-		logger.info(" list : "+map.get("list"));
-		
-		System.out.println("rs : "+map);
-		System.out.println("map : "+map);
+		map.put("list", mapper.listBoard(map));
 		return map;
 	}
 	
@@ -48,5 +43,5 @@ public class BoardController {
 		
 		return map;
 	};
-	
+		
 }

@@ -9,9 +9,8 @@ import org.springframework.stereotype.Repository;
 public interface BoardMapper {
 	public void insertBoard(Map<?, ?> p);
 	public Board detailBoard(Map<?, ?> p);
-	public List<?> selectSome(Map<?, ?> p);
-	public List<?> list(Map<?, ?> p);
-	public int count();
+	public List<?> listBoard(Map<?, ?> p);
+	public int countTotalContents();
 	public void updateBoard(Board p);
 	public void deleteBoard(Board p);
 }

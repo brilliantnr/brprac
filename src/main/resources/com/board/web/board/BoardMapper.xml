@@ -13,11 +13,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<result property="regidate" column="REGIDATE"/>
 </resultMap>
 
-<insert id="createBoard">
+<insert id="insertBoard">
 	INSERT INTO T_BOARD (TITLE, CONTENT, WRITER, PW) 
 	VALUES (#{title}, #{content} ,#{writer},#{pw});
 </insert>
-<select id="list" resultMap="board">
+
+<select id="listBoard" resultMap="board">
 	SELECT * FROM (
 		SELECT @ROWNUM:=@ROWNUM+1 as ROWNUM, A.*
 		FROM T_BOARD A, (SELECT @ROWNUM:=0) R
@@ -25,8 +26,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		) T
 	WHERE ROWNUM BETWEEN #{beginRow} AND #{endRow}
 	
+	<!-- <if test="#{keyword} != null and #{keyword}==''">
+  		AND  TITLE LIKE CONCAT('%', #{keyword}, '%')
+		</if> -->
 </select>
-<select id="count" resultType="int">
+
+<select id="countTotalContents" resultType="int">
 	SELECT COUNT(*)  
 	FROM T_BOARD  
 </select>

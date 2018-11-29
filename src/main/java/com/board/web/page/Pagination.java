@@ -24,7 +24,7 @@ public Map<?, ?> excute(Map<?, ?> p) {
 	
 	int pageNum = Integer.parseInt((String) pg.get("pageNo"));
 	logger.info("pageNum : "+pageNum);
-	int rowCount =mapper.count(); //총 게시물의 수
+	int rowCount =mapper.countTotalContents(); //총 게시물의 수
 	int blockSize = 5; // 1~5, 6~10
 	
 	int pageCount = (int) Math.ceil(rowCount / blockSize); // 총페이지수
@@ -37,7 +37,7 @@ public Map<?, ?> excute(Map<?, ?> p) {
 	int endRow = pageNum * blockSize;
 	boolean existPrev = (beginPage!=1);
 	boolean existNext = (!(endPage<pageCount));
-	
+	/*
 	System.out.println("총 게시글 수 - rowCount : "+rowCount);
 	System.out.println("총 페이지 수  - pageCount : "+pageCount);
 	System.out.println("시작페이지 숫자: beginPage : "+beginPage);
@@ -49,7 +49,7 @@ public Map<?, ?> excute(Map<?, ?> p) {
 	System.out.println("endRow : "+endRow);
 	System.out.println("existPrev : "+existPrev);
 	System.out.println("existNext : "+existNext);
-	
+	*/
 	pg.put("rowCount", rowCount);
 	pg.put("beginPage", beginPage);
 	pg.put("endPage", endPage);

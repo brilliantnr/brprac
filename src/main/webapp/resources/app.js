@@ -10,7 +10,11 @@ app=(()=>{
 			ctx : ()=>{return sessionStorage.getItem('context');}
 			}
 		})());
-		$('#wrapper').append(app.page.listBrd());
+		
+		$('#wrapper').empty();
+		$('#wrapper').append($('<div/>').attr({id : 'contents'}));
+	    
+		app.page.listBrd();
 		app.service.init();
 	};
 	return {init : init};
@@ -19,11 +23,15 @@ app=(()=>{
 app.service=(()=>{
 	var init=()=>{
 		console.log('step2 : app.service.init 진입'); 
-		list(1);
+		list({pageNum:1});
 	};
 	var list=x=>{
+		$('tbody').empty();
+		$('#pagination').remove();
 		console.log('step3: app.service.list 진입');
-		$.getJSON($.ctx()+'/board/list/'+x,d=>{
+		console.log('x.pageNum : '+x.pageNum);
+		console.log('x.keyword : '+x.keyword);
+		$.getJSON($.ctx()+'/board/list/'+x.pageNum+'/'+x.keyword,d=>{
 			$.each(d.list,(i,j)=>{
 				
 				let transTime=x=>{	
@@ -52,8 +60,8 @@ app.service=(()=>{
 			});
 			
 			//페이지네이션
-			$('<div/>').addClass("clearfix").appendTo("#list_row");
-			$('<ul/>').addClass("pagination pull-right").attr({id:'pg_ul'}).appendTo("#pg_div");
+			$('<div/>').attr({id:"pagination"}).addClass("clearfix").appendTo("#contents");
+			$('<ul/>').addClass("pagination pull-right").attr({id:'pg_ul'}).appendTo("#pagination");
 			if(d.existPrev==true){
 				$('<li/>').append(
 						$('<a href="#"/>').append(
@@ -69,9 +77,7 @@ app.service=(()=>{
 				$('<li/>').append($('<a href="#"/>').html(i))
 				.click(e=>{
 					//페이지 클릭이벤트
-					$.ctx().empty();
-					e.preventDefault();
-					app.service.list(i);
+					app.service.list({pageNum:i});
 				})
 				.appendTo('#pg_ul');
 			};
@@ -105,8 +111,8 @@ app.service=(()=>{
 app.page=(()=>{
 	var listBrd=()=>{
 		/*  */
-		let $list = $('<div/>').addClass("container").append(
-				$('<div/>').attr({id:"list_row"}).addClass("row"));
+		let list_compo = $('<div/>').attr({id:"container"}).addClass("container").appendTo('#contents');
+		$('<div/>').attr({id:"list_row"}).addClass("row").appendTo("#container");
 		
 		/* 리스트   */
 		$('<div/>').attr({id:"list_col"}).addClass("col-md-12").appendTo($('#list_row'));
@@ -121,36 +127,43 @@ app.page=(()=>{
 		
 		/* 검색 및 글쓰기 버튼  */
 		$('<div/>').attr({id:"btn_col"}).addClass("col-md-12").appendTo($('#list_row'));
-		let search = '<!-- search -->'
-		      +'<div class="col-xs-8 col-xs-offset-2">'
-	            +'<div class="input-group">'
-	                    +'<div class="input-group-btn search-panel">'
-		                        +'<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">'
-		                          +'<span id="search_concept">제목</span> <span class="caret"></span>'
-		                        +'</button>'
-	                        +'<ul class="dropdown-menu" role="menu">'
-	                         +'<!--  '
-	                          +'<li><a href="#contains">Contains</a></li>'
-	                          +'<li><a href="#its_equal">Its equal</a></li>'
-	                          +'<li><a href="#greather_than">Greather than ></a></li>'
-	                          +'<li><a href="#less_than">Less than < </a></li>'
-	                          +'<li class="divider"></li>'
-	                          +'<li><a href="#all">Anything</a></li> '
-	                          +'-->'
-	                        +'</ul>'
-	                    +'</div>'
-	                    +'<input type="hidden" name="search_param" value="all" id="search_param">         '
-	                    +'<input type="text" class="form-control" name="x" placeholder="Search term...">'
-	                    +'<span class="input-group-btn">'
-	                        +'<button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>'
-	                    +'</span>'
-	                +'</div>'
-	            +'</div><!-- search끝 -->';
-		search.appendTo('#btn_col');
-		$('<button/>').html("글쓰기").addClass("btn btn-default").appendTo('#btn_col');
 		
-		return $list;
+		//검색set
+		$('<div/>').addClass("col-xs-8 col-xs-offset-2").append(
+				$('<div/>').attr({id:"in_gr"}).addClass("input-group")
+				).appendTo('#btn_col');
+		$('<div/>').attr({id:"search_bt_div"}).addClass("input-group-btn search-panel").appendTo("#in_gr");
+		$('<button>').attr({ id:"drop_btn", 'type':"button", 'data-toggle':"dropdown"}).addClass("btn btn-default dropdown-toggle").appendTo("#search_bt_div");
+		$('<span/>').attr({id:"search_concept"}).html("제목").appendTo("#drop_btn");
+		$('<span/>').addClass("caret").appendTo("#drop_btn");
+		$('<ul/>').addClass("dropdown-menu").attr({'role':"menu",id:"drop_ul"}).appendTo("#search_bt_div");
+		$('<li/>').append($('<a/>').attr({href:"#"}).html("제목")).appendTo("#drop_ul");
+		$('<li/>').append($('<a/>').attr({href:"#"}).html("내용")).appendTo("#drop_ul");
+		$('<input/>').attr({type:"hidden",id:"search_param", name:"search_param", value:"all"}).appendTo("#in_gr");
+		$('<input/>').attr({type:"text",id:"input_keyword", name:"x", placeholder:"Search.."}).addClass("form-control").appendTo("#in_gr");
+		$('<span/>').addClass("input-group-btn").attr({id:"in_gr_bt"}).appendTo("#in_gr");
+		$('<button>').addClass("btn btn-default").attr({id:"search_btn",type:"button"}).click(e=>{
+			alert("서치 버튼 눌림");
+			list({pageNum:1, keyword:$('#input_keyword').val()});
+		}
+				/*
+				 * click 내에서 널값 삼항 시도, but 안됨
+				 * ($('#input_keyword').val()==null?
+				function(){console.log("없ㅇ므"); alert("없ㅇ므");}:
+				function(e){$.getJSON($.ctx()+'/board/search/'+$('#input_keyword').val(),d=>{
+						alert(" 키워드 입력 받음 : "+$('#input_keyword').val());
+						// 다시 리스트 구성
+					});	
+					})
+				*/
+				
+		).appendTo("#in_gr_bt");
+		$('<span/>').addClass("glyphicon glyphicon-search").appendTo("#search_btn");
 		
+		//글쓰기
+		$('<button/>').attr({id:"write_btn"}).html("글쓰기").addClass("btn btn-default").appendTo('#btn_col');
+		
+		return list_compo;
 	};
 	var addBrd=()=>{
 		'<div class="container">'
