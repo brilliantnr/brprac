@@ -1,4 +1,4 @@
-package com.board.web.common;
+package com.board.web.cmm;
 
 import javax.servlet.http.HttpServletRequest;
 

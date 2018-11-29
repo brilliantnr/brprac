@@ -18,21 +18,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	VALUES (#{title}, #{content} ,#{writer},#{pw});
 </insert>
 
-<select id="listBoard" resultMap="board">
-	SELECT * FROM (
+<select id="listBoard"  resultMap="board">
+	SELECT NUM, TITLE, CONTENT, WRITER, PW, REGIDATE 
+	FROM (
 		SELECT @ROWNUM:=@ROWNUM+1 as ROWNUM, A.*
 		FROM T_BOARD A, (SELECT @ROWNUM:=0) R
 		ORDER BY NUM DESC
 		) T
-	WHERE ROWNUM BETWEEN #{beginRow} AND #{endRow}
-	
-	<!-- <if test="#{keyword} != null and #{keyword}==''">
-  		AND  TITLE LIKE CONCAT('%', #{keyword}, '%')
-		</if> -->
+	<where>
+	ROWNUM BETWEEN #{beginRow} AND #{endRow}
+	<if test="keyword!='undefined' and keyword!=''">
+	AND TITLE LIKE CONCAT('%', #{keyword}, '%')
+	</if>
+	</where>
 </select>
 
+
+
+
+
 <select id="countTotalContents" resultType="int">
-	SELECT COUNT(*)  
+	SELECT COUNT(*) AS COUNT  
 	FROM T_BOARD  
 </select>
 </mapper>
