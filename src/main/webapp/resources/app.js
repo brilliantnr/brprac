@@ -400,7 +400,11 @@ app.page=(()=>{
 		$('<button>').addClass("btn btn-default").attr({id:"search_btn",type:"button"}).click(e=>{
 			/* search 버튼 이벤트 */
 			console.log("서치 버튼 클릭");
+			let $search_concept = $('#search_concept').html();
 			let $input_keyword = $('#input_keyword').val();
+			console.log("말머리 선택 : "+$search_concept);
+			console.log("검색 조건 : "+$input_keyword);
+			
 			if($input_keyword===''){
 				alert("검색어를 입력해주세요");
 			}else{
