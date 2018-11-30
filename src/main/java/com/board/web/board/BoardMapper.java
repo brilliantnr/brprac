@@ -11,6 +11,6 @@ public interface BoardMapper {
 	public Board detailBoard(Map<?, ?> p);
 	public List<?> listBoard(Map<?, ?> p);
 	public int countTotalContents(Map<?, ?> p);
-	public void updateBoard(Board p);
-	public void deleteBoard(Board p);
+	public void updateBoard(Map<?, ?> p);
+	public void deleteBoard(Map<?, ?> p);
 }

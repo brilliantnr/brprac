@@ -27,17 +27,17 @@ app.service=(()=>{
 		app.page.listBrd();
 		list({pageNum:1});
 		
-		
-		/* 버튼 모음 */
+		/*
+		 버튼 모음 
 
 		$('#list_btn').click(e=>{
 			alert('버튼 클릭');
 			app.service.init();
 		});
-		/*$('#write_btn').click(e=>{
+		$('#write_btn').click(e=>{
 			alert('글쓰기 버튼 클릭');
 			add();
-		});*/
+		});
 		$('#complete_btn').click(e=>{
 			alert('버튼 클릭');
 			app.service.init();
@@ -52,7 +52,7 @@ app.service=(()=>{
 			//비밀번호 확인 과정 필요
 			app.page.detailBrd();
 		});
-		
+		*/
 
 		
 		
@@ -98,7 +98,7 @@ app.service=(()=>{
 									let $num = $('#num_'+j.num).html();
 									console.log("클릭 후 : "+$('#num_'+j.num).html());
 									$.getJSON($.ctx()+"/board/detail/"+$('#num_'+j.num).html(),d=>{
-										alert($num);
+										console.log($num);
 										detail($num);
 									});
 						})
@@ -106,20 +106,6 @@ app.service=(()=>{
 						$('<td/>').attr({style:"text-align: center;"}).html(j.writer),
 						$('<td/>').attr({style:"text-align: center;"}).html(transTime(j.regidate))
 				).appendTo($('#tbody_list'));
-				
-				
-				/* 게시글클릭을 빼보자 */
-				/*$('#title_'+j.num)
-				.click(e=>{
-						//제목 클릭 이벤트
-					console.log("$('#title_'+j.num).val() : "+$('#title_'+j.num).val());
-						$.getJSON($.ctx()+"/board/detail/"+$('#title_'+j.num).val(),d=>{
-							alert($('#title_'+j.num).val());
-						});
-						
-				});*/
-				
-				
 			});
 
 			 //페이지네이션  구성 시작
@@ -135,7 +121,7 @@ app.service=(()=>{
 							$('<span/>').addClass("glyphicon glyphicon-chevron-left "))).click(e=>{
 								if(prev==''){
 									e.preventDefault();
-									alert("d.preBlock : "+d.preBlock);
+									console.log("d.preBlock : "+d.preBlock);
 									list({pageNum: d.preBlock, keyword:d.keyword});
 								};
 							}).appendTo('#pg_ul');
@@ -156,32 +142,100 @@ app.service=(()=>{
 							$('<span/>').addClass("glyphicon glyphicon-chevron-right "))).click(e=>{
 								if(next==''){
 									e.preventDefault();
-									alert("d.nextBlock : "+d.nextBlock);
+									console.log("d.nextBlock : "+d.nextBlock);
 									app.service.list({pageNum: d.nextBlock, keyword:d.keyword});
 								};
 							}).appendTo('#pg_ul');
 			
 		});
 		//getJSON END========================================================================================================
-		/*$('#write_btn').click(e=>{
-			alert('글쓰기 버튼 클릭');
-			add();
-		});*/
 	};
 	var add=()=>{
-		$('#wrapper').html(app.page.addBrd());
-		let $title = $('#input_title');
+		$('#wrapper').html(app.page.inputBrd());
+		$('#list_btn').click(e=>{
+			console.lg('리스트 버튼 클릭');
+			$('#wrapper').empty();
+     		$('#wrapper').append($('<div/>').attr({id : 'contents'}));
+        	app.page.listBrd();
+     		list({pageNum:1});
+			 
+		});
+		$('#complete_btn').click(e=>{
+			let $title = $('#input_title').val();
+			let $content = $('#input_content').val();
+			let $writer = $('#input_writer').val();
+			let $pw = $('#input_pw').val();
+			console.log("$title : "+$title);
+			console.log("$content : "+$content);
+			console.log("$writer : "+$writer);
+			console.log("$pw : "+$pw);
+			
+			if($title===''){
+				console.log("if문 진입");
+				alert("제목을 입력하세요");
+			}else if($writer===''){
+				alert("작성자를 입력하세요");
+			}else if($pw===''){
+				alert("비밀번호를 입력하세요");
+			}else if($content===''){
+				alert("내용을 입력하세요");
+			}else{
+				console.log("null값 없음");
+				 $.ajax({
+		             url : $.ctx()+'/board/add',
+		             method : 'post',
+		             contentType : 'application/json',
+		             data : JSON.stringify({
+		            	 title : $title,
+		            	 content :$content,
+		            	 writer :$writer, 
+		            	 pw : $pw,
+		             }),
+		             success : d=>{
+		            	 //app.service.list({pageNum:1});
+		            	 alert('게시글 입력 완료 ');
+		            	$('#wrapper').empty();
+		         		$('#wrapper').append($('<div/>').attr({id : 'contents'}));
+		            	app.page.listBrd();
+		         		list({pageNum:1});
+		             }
+		           });
+			};
+			
+			
+		});
 		
+	};
+	var update=x=>{
+		$('#wrapper').html(app.page.inputBrd());
+		$('#list_btn').click(e=>{
+			console.log('리스트 버튼 클릭');
+			$('#wrapper').empty();
+     		$('#wrapper').append($('<div/>').attr({id : 'contents'}));
+        	app.page.listBrd();
+     		list({pageNum:1});
+			 
+		});
+		console.log("=====update 페이지 진입 ===== ");
+		$('#input_title').val(x.title);
+		$('#input_writer').val(x.writer);
+		$('#input_content').html(x.content);
 		
 		$('#complete_btn').click(e=>{
-			alert('완료 버튼 클릭');
-			alert($title);
+			console.log("=====update complete_btn 클릭 ===== ");
+			let $title = $('#input_title').val();
+			console.log("$title : "+$title);
+			
+			
+			
+			if($('#input_title').val()){}
 			 $.ajax({
-	             url : $.ctx()+'/board/add',
-	             method : 'post',
+	             url : $.ctx()+'/board/update',
+	             method : 'put',
 	             contentType : 'application/json',
 	             data : JSON.stringify({
-	            	 title : $title.val(),
+	            	 num : x.num,
+	            	 title : $('#input_title').val(),
 	            	 content :$('#input_content').val(),
 	            	 writer :$('#input_writer').val(), 
 	            	 pw : $('#input_pw').val(),
@@ -189,17 +243,21 @@ app.service=(()=>{
 	             success : d=>{
 	            	 //app.service.list({pageNum:1});
 	            	 alert('게시글 입력 완료 ');
+	            	 console.log(d.pw);
 	            	$('#wrapper').empty();
 	         		$('#wrapper').append($('<div/>').attr({id : 'contents'}));
-	            	 app.page.listBrd();
+	            	app.page.listBrd();
 	         		list({pageNum:1});
 	             }
 	           });
 		});
 		
 	};
+	
 	var detail=x=>{
 		$('#wrapper').html(app.page.detailBrd());
+		
+		//상세 게시글 getJSON START====================================
 		$.getJSON($.ctx()+'/board/detail/'+x,d=>{
 			console.log('d.detail : '+d.detail.title);
 			$('#td_content1').html(d.detail.num);
@@ -207,40 +265,102 @@ app.service=(()=>{
 			$('#td_content3').html(d.detail.writer);
 			$('#td_content4').html(d.detail.content);
 		});
-		/*
-		 +'<td id="td"'+i +' style="width: 160px; text-align: center;"></td>'
-            +'<td id="td_content"'+i +' style="text-align: left;"></td>'
-	                +'<tr>'
-	                  +'<td style="width: 160px; text-align: center;">글제목</td>'
-	                  +'<td style="text-align: left;">값불러오기</td>'
-	                +'</tr>'
-	                +'<tr>'
-	                  +'<td style="width: 160px; text-align: center;">작성자</td>'
-	                  +'<td style="text-align: left;">값불러오기</td>'
-	                +'</tr>'
-	                +'<tr>'
-	                  +'<td style="width: 160px; text-align: center;">비밀번호</td>'
-	                  +'<td style="text-align: left;">값불러오기</td>'
-	                +'</tr>'
-	                +'<tr>  '
-	                  +'<td style="width: 160px; text-align: center;">내용</td>'
-	                  +'<td style="text-align: left;">값불러오기</td>'
-	                +'</tr> '
-		*/
+		//상세 게시글 getJSON END ====================================
 		
+		// 상세 게시글 버튼 모음 ====================================
+		$('#list_btn').click(e=>{
+			console.log('리스트 버튼 클릭');
+			$('#wrapper').empty();
+     		$('#wrapper').append($('<div/>').attr({id : 'contents'}));
+        	app.page.listBrd();
+     		list({pageNum:1});
+		});
+		
+		// 수정 버튼 클릭시 =========================================================
+		$('#update_btn').click(e=>{
+			console.log("update_btn 클릭");
+			validation("updateBrd");
+		});
+		$('#delete_btn').click(e=>{
+			console.log("delete_btn 클릭");
+			validation("deleteBrd");
+		});
 		
 	};
-	
-	
-	
+	var validation=x=>{
+		console.log('validation 진입========');
+		let pwInput = prompt("비밀번호를 입력하세요 ","비밀번호");
+		let $num = $('#td_content1').html();
+		console.log("arti_num : "+$num);
+		
+		$.ajax({
+             url : $.ctx()+'/board/valid/'+pwInput,
+             method : 'post',
+             contentType : 'application/json',
+             data : JSON.stringify({
+            	 pwInput :pwInput,
+            	 num : $num
+             }),
+             success : d=>{
+					console.log('auth :: '+d.auth);
+					if(d.auth===false){
+						alert('비밀번호 확인해주세요');
+						
+					}else{
+						
+						if(x=='updateBrd'){
+							alert('비밀번호 일치, 수정페이지로 이동');
+							update({num : $num,
+								  title : d.retrieveInfo.title,
+								 writer : d.retrieveInfo.writer,
+								content : d.retrieveInfo.content });
+							console.log("d.retrieveInfo.title : "+d.retrieveInfo.title);
+							console.log("d.retrieveInfo.writer : "+d.retrieveInfo.writer);
+							console.log("d.retrieveInfo.content : "+d.retrieveInfo.content);
+							
+						}else if(x=='deleteBrd'){
+							alert('비밀번호 일치');
+							$.ajax({
+					             url : $.ctx()+'/board/delete',
+					             method : 'delete',
+					             contentType : 'application/json',
+					             data : JSON.stringify({
+					            	 num : $num
+					             }),
+					             success : d=>{
+					            	 alert('삭제완료');
+					            	 console.log('삭제완료');
+					            	$('#wrapper').empty();
+					         		$('#wrapper').append($('<div/>').attr({id : 'contents'}));
+					            	app.page.listBrd();
+					         		list({pageNum:1});
+					             }
+					           });
+						}
+						
+						
+					}
+				}
+           });
+	};
 	
 	return{init:init,
 			list:list,
 			add:add,
+			detail:detail,
+			validation:validation
 			/*button:button*/
 			};
 })();
 
+
+
+
+
+
+
+
+// 페이지 구성 =============================================================================================================
 app.page=(()=>{
 	var listBrd=()=>{
 		/*  */
@@ -269,16 +389,6 @@ app.page=(()=>{
 		$('<button>').attr({ id:"drop_btn", 'type':"button", 'data-toggle':"dropdown"}).addClass("btn btn-default dropdown-toggle").appendTo("#search_bt_div");
 		$('<span/>').attr({id:"search_concept"}).html("제목").appendTo("#drop_btn");
 		$('<span/>').addClass("caret").appendTo("#drop_btn");
-		/*
-		 * <select class="form-control" id="artist_name" name="account">
-		 * 	<option>방탄소년단</option>
-		 * 	<option>트와이스</option>
-		 * 	<option>레드벨벳</option>
-		 * </select>
-		 * */
-		$('<select/>').addClass("dropdown-menu").attr({'role':"menu",id:"drop_select"}).appendTo("#search_bt_div");
-		$('<option/>').html('제목').appendTo("#drop_select");
-		$('<option/>').html('내용').appendTo("#drop_select");
 		
 		$('<ul/>').addClass("dropdown-menu").attr({'role':"menu",id:"drop_ul"}).appendTo("#search_bt_div");
 		$('<li/>').append($('<a/>').attr({href:"#"}).html("제목")).appendTo("#drop_ul");
@@ -289,8 +399,16 @@ app.page=(()=>{
 		$('<span/>').addClass("input-group-btn").attr({id:"in_gr_bt"}).appendTo("#in_gr");
 		$('<button>').addClass("btn btn-default").attr({id:"search_btn",type:"button"}).click(e=>{
 			/* search 버튼 이벤트 */
-			alert("서치 버튼 클릭");
-			app.service.list({pageNum:1, keyword:$('#input_keyword').val()});
+			console.log("서치 버튼 클릭");
+			let $input_keyword = $('#input_keyword').val();
+			if($input_keyword===''){
+				alert("검색어를 입력해주세요");
+			}else{
+				//검색어 입력 완료시
+				app.service.list({pageNum:1, keyword:$input_keyword});
+				
+			};
+			
 		}).appendTo("#in_gr_bt");
 		$('<span/>').addClass("glyphicon glyphicon-search").appendTo("#search_btn");
 		//bootstrap.min.js
@@ -308,14 +426,14 @@ app.page=(()=>{
 		//글쓰기
 		$('<button/>').attr({id:"write_btn"}).html("글쓰기").addClass("btn btn-default").appendTo('#btn_col')
 		.click(e=>{
-			alert('글쓰기 버튼 클릭');
+			console.log('글쓰기 버튼 클릭');
 			app.service.add();
 		});
 
 		return list_compo;
 	};
-	var addBrd=()=>{
-		let addBrdPage = '<div id="addBrd_container" class="container">'
+	var inputBrd=()=>{
+		let inputBrdPage = '<div id="inputBrd_container" class="container">'
 		      +'<div class="row">'
 		        +'<div class="col-md-12">'
 		            +'<table class="table table-striped" style="text-align:center; border:1px solid #dddddd;">'
@@ -328,15 +446,15 @@ app.page=(()=>{
 		              +'<tbody>'
 		                +'<tr>'
 		                  +'<td style="width: 160px; text-align: center;">글제목</td>'
-		                  +'<td><input type="text" class="form-control" id="input_title" maxlength="50"></td>'
+		                  +'<td><input type="text" class="form-control" id="input_title" maxlength="50"></textarea></td>'
 		                +'</tr>'
 		                +'<tr>'
 		                  +'<td style="width: 160px; text-align: center;">작성자</td>'
-		                  +'<td><input type="text" class="form-control" id="input_writer" maxlength="50"></td>'
+		                  +'<td><input type="text" class="form-control" id="input_writer" maxlength="50"></textarea></td>'
 		                +'</tr>'
 		                +'<tr>'
 		                  +'<td style="width: 160px; text-align: center;">비밀번호</td>'
-		                  +'<td><input type="text" class="form-control" id="input_pw" maxlength="20"></td>'
+		                  +'<td><input type="password" class="form-control" id="input_pw" maxlength="20"></textarea></td>'
 		                +'</tr>'
 		                +'<tr>  '
 		                  +'<td style="width: 160px; text-align: center;">내용</td>'
@@ -357,10 +475,14 @@ app.page=(()=>{
 		      +'</div>';
 		
 		
-		//$('#addBrd_container').appendTo('#contents');
-	      return addBrdPage;
+		//$('#inputBrd_container').appendTo('#contents');
+	      return inputBrdPage;
 	};
 	var detailBrd=()=>{
+		/*$('<button/>').attr({id:"update_btn"}).addClass("btn btn-primary").html("수정").appendTo('#btn_div');
+		$('#update_btn').click(e=>{
+			alert("수정 버튼 클릭");
+		});*/
 		let detailPage = '<div class="container">'
 		      +'<div class="row">'
 		        +'<div class="col-md-12">'
@@ -391,16 +513,20 @@ app.page=(()=>{
 		              +'</tbody>'
 	            +'</table>'
 	              +'<div id="btn_div" style="text-align: right;">'
+	                +'<button id="list_btn" class="btn btn-primary pull-left">목록가기</button>'
 	                +'<button id="update_btn" class="btn btn-primary">수정</button>'
 	                +'<button id="delete_btn" class="btn btn-primary">삭제</button>'
 	              +'</div>'
 	          +'</div>'
 	         +'</div>'
 	      +'</div>';
+		
+		
 		return detailPage;
 	};
 	return{listBrd:listBrd,
-		addBrd:addBrd,
+		inputBrd:inputBrd,
 		detailBrd,detailBrd};
 })();
+
 

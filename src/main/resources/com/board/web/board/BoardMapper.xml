@@ -32,8 +32,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 </select>
 
 <select id="detailBoard" resultType="com.board.web.board.Board">
-<!-- 비번 없음 -->
-	SELECT NUM, TITLE, CONTENT, WRITER, REGIDATE 
+	SELECT NUM, TITLE, CONTENT, WRITER,PW, REGIDATE 
 	FROM T_BOARD
 	WHERE NUM LIKE #{num}
 </select>
@@ -47,4 +46,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		WHERE TITLE LIKE CONCAT('%', #{keyword}, '%')
 	</if>
 </select>
+<update id="updateBoard">
+	UPDATE T_BOARD 
+	SET TITLE = #{title},
+		CONTENT = #{content},
+		WRITER = #{writer},
+		PW = #{pw}
+	WHERE NUM = #{num};
+</update>
+
+<delete id="deleteBoard">
+	DELETE FROM T_BOARD 
+	WHERE NUM =#{num};
+</delete>
+
+
 </mapper>
