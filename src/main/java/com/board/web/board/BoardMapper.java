@@ -10,7 +10,7 @@ public interface BoardMapper {
 	public void insertBoard(Map<?, ?> p);
 	public Board detailBoard(Map<?, ?> p);
 	public List<?> listBoard(Map<?, ?> p);
-	public int countTotalContents();
+	public int countTotalContents(Map<?, ?> p);
 	public void updateBoard(Board p);
 	public void deleteBoard(Board p);
 }

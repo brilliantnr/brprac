@@ -23,22 +23,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	FROM (
 		SELECT @ROWNUM:=@ROWNUM+1 as ROWNUM, A.*
 		FROM T_BOARD A, (SELECT @ROWNUM:=0) R
+		<if test="keyword!='undefined' and keyword!=''">
+		WHERE TITLE LIKE CONCAT('%', #{keyword}, '%')
+		</if>
 		ORDER BY NUM DESC
 		) T
-	<where>
-	ROWNUM BETWEEN #{beginRow} AND #{endRow}
-	<if test="keyword!='undefined' and keyword!=''">
-	AND TITLE LIKE CONCAT('%', #{keyword}, '%')
-	</if>
-	</where>
+	WHERE ROWNUM BETWEEN #{beginRow} AND #{endRow}
 </select>
 
-
+<select id="detailBoard" resultType="com.board.web.board.Board">
+<!-- 비번 없음 -->
+	SELECT NUM, TITLE, CONTENT, WRITER, REGIDATE 
+	FROM T_BOARD
+	WHERE NUM LIKE #{num}
+</select>
 
 
 
 <select id="countTotalContents" resultType="int">
 	SELECT COUNT(*) AS COUNT  
-	FROM T_BOARD  
+	FROM T_BOARD 
+	<if test="keyword!='undefined' and keyword!=''">
+		WHERE TITLE LIKE CONCAT('%', #{keyword}, '%')
+	</if>
 </select>
 </mapper>

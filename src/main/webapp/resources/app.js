@@ -32,12 +32,12 @@ app.service=(()=>{
 
 		$('#list_btn').click(e=>{
 			alert('버튼 클릭');
-			app.page.listBrd();
+			app.service.init();
 		});
-		$('#write_btn').click(e=>{
+		/*$('#write_btn').click(e=>{
 			alert('글쓰기 버튼 클릭');
 			add();
-		});
+		});*/
 		$('#complete_btn').click(e=>{
 			alert('버튼 클릭');
 			app.service.init();
@@ -92,27 +92,32 @@ app.service=(()=>{
 				};
 				
 				$('<tr/>').append(
-						$('<td/>').attr({name:"title_num" ,style:"text-align: center;"}).html(j.num),
-						$('<td/>').append($('<a href="#"/>').html(j.title).click(e=>{
-							console.log($('td[name=title_num]').val());
-							$.getJSON($.ctx()+"/board/detail/"+$('#j.num'),d=>{
-								alert("제목 클릭 j.title: "+j.num);
-							});
+						$('<td/>').attr({id:"num_"+j.num ,style:"text-align: center;"}).html(j.num),
+						$('<td/>').append($('<a href="#"/>').attr({id:"title_"+j.num}).html(j.title)
+								.click(e=>{
+									let $num = $('#num_'+j.num).html();
+									console.log("클릭 후 : "+$('#num_'+j.num).html());
+									$.getJSON($.ctx()+"/board/detail/"+$('#num_'+j.num).html(),d=>{
+										alert($num);
+										detail($num);
+									});
 						})
 						),
 						$('<td/>').attr({style:"text-align: center;"}).html(j.writer),
 						$('<td/>').attr({style:"text-align: center;"}).html(transTime(j.regidate))
 				).appendTo($('#tbody_list'));
 				
-				$('#title_link')
+				
+				/* 게시글클릭을 빼보자 */
+				/*$('#title_'+j.num)
 				.click(e=>{
 						//제목 클릭 이벤트
-					console.log();
-						$.getJSON($.ctx()+"/board/detail/"+j.num,d=>{
-							alert("제목 클릭 j.title: "+j.num);
+					console.log("$('#title_'+j.num).val() : "+$('#title_'+j.num).val());
+						$.getJSON($.ctx()+"/board/detail/"+$('#title_'+j.num).val(),d=>{
+							alert($('#title_'+j.num).val());
 						});
 						
-				});
+				});*/
 				
 				
 			});
@@ -183,7 +188,8 @@ app.service=(()=>{
 	             }),
 	             success : d=>{
 	            	 //app.service.list({pageNum:1});
-	            	 $('#wrapper').empty();
+	            	 alert('게시글 입력 완료 ');
+	            	$('#wrapper').empty();
 	         		$('#wrapper').append($('<div/>').attr({id : 'contents'}));
 	            	 app.page.listBrd();
 	         		list({pageNum:1});
@@ -192,8 +198,37 @@ app.service=(()=>{
 		});
 		
 	};
-	var detail=()=>{
+	var detail=x=>{
 		$('#wrapper').html(app.page.detailBrd());
+		$.getJSON($.ctx()+'/board/detail/'+x,d=>{
+			console.log('d.detail : '+d.detail.title);
+			$('#td_content1').html(d.detail.num);
+			$('#td_content2').html(d.detail.title);
+			$('#td_content3').html(d.detail.writer);
+			$('#td_content4').html(d.detail.content);
+		});
+		/*
+		 +'<td id="td"'+i +' style="width: 160px; text-align: center;"></td>'
+            +'<td id="td_content"'+i +' style="text-align: left;"></td>'
+	                +'<tr>'
+	                  +'<td style="width: 160px; text-align: center;">글제목</td>'
+	                  +'<td style="text-align: left;">값불러오기</td>'
+	                +'</tr>'
+	                +'<tr>'
+	                  +'<td style="width: 160px; text-align: center;">작성자</td>'
+	                  +'<td style="text-align: left;">값불러오기</td>'
+	                +'</tr>'
+	                +'<tr>'
+	                  +'<td style="width: 160px; text-align: center;">비밀번호</td>'
+	                  +'<td style="text-align: left;">값불러오기</td>'
+	                +'</tr>'
+	                +'<tr>  '
+	                  +'<td style="width: 160px; text-align: center;">내용</td>'
+	                  +'<td style="text-align: left;">값불러오기</td>'
+	                +'</tr> '
+		*/
+		
+		
 	};
 	
 	
@@ -201,6 +236,7 @@ app.service=(()=>{
 	
 	return{init:init,
 			list:list,
+			add:add,
 			/*button:button*/
 			};
 })();
@@ -233,9 +269,21 @@ app.page=(()=>{
 		$('<button>').attr({ id:"drop_btn", 'type':"button", 'data-toggle':"dropdown"}).addClass("btn btn-default dropdown-toggle").appendTo("#search_bt_div");
 		$('<span/>').attr({id:"search_concept"}).html("제목").appendTo("#drop_btn");
 		$('<span/>').addClass("caret").appendTo("#drop_btn");
+		/*
+		 * <select class="form-control" id="artist_name" name="account">
+		 * 	<option>방탄소년단</option>
+		 * 	<option>트와이스</option>
+		 * 	<option>레드벨벳</option>
+		 * </select>
+		 * */
+		$('<select/>').addClass("dropdown-menu").attr({'role':"menu",id:"drop_select"}).appendTo("#search_bt_div");
+		$('<option/>').html('제목').appendTo("#drop_select");
+		$('<option/>').html('내용').appendTo("#drop_select");
+		
 		$('<ul/>').addClass("dropdown-menu").attr({'role':"menu",id:"drop_ul"}).appendTo("#search_bt_div");
 		$('<li/>').append($('<a/>').attr({href:"#"}).html("제목")).appendTo("#drop_ul");
 		$('<li/>').append($('<a/>').attr({href:"#"}).html("내용")).appendTo("#drop_ul");
+		
 		$('<input/>').attr({type:"hidden",id:"search_param", name:"search_param", value:"all"}).appendTo("#in_gr");
 		$('<input/>').attr({type:"text",id:"input_keyword", name:"x", placeholder:"Search.."}).addClass("form-control").appendTo("#in_gr");
 		$('<span/>').addClass("input-group-btn").attr({id:"in_gr_bt"}).appendTo("#in_gr");
@@ -245,9 +293,24 @@ app.page=(()=>{
 			app.service.list({pageNum:1, keyword:$('#input_keyword').val()});
 		}).appendTo("#in_gr_bt");
 		$('<span/>').addClass("glyphicon glyphicon-search").appendTo("#search_btn");
+		//bootstrap.min.js
+		$(document).ready(function(e){
+		    $('.search-panel .dropdown-menu').find('a').click(function(e) {
+				e.preventDefault();
+				var param = $(this).attr("href").replace("#","");
+				var concept = $(this).text();
+				$('.search-panel span#search_concept').text(concept);
+				$('.input-group #search_param').val(param);
+			});
+		});
+		//bootstrap.min.js 끝
 		
 		//글쓰기
-		$('<button/>').attr({id:"write_btn"}).html("글쓰기").addClass("btn btn-default").appendTo('#btn_col');
+		$('<button/>').attr({id:"write_btn"}).html("글쓰기").addClass("btn btn-default").appendTo('#btn_col')
+		.click(e=>{
+			alert('글쓰기 버튼 클릭');
+			app.service.add();
+		});
 
 		return list_compo;
 	};
@@ -298,8 +361,43 @@ app.page=(()=>{
 	      return addBrdPage;
 	};
 	var detailBrd=()=>{
-		
-		
+		let detailPage = '<div class="container">'
+		      +'<div class="row">'
+		        +'<div class="col-md-12">'
+		            +'<table class="table table-striped" style="text-align:center; border:1px solid #dddddd;">'
+		              +'<thead>'
+		                +'<tr>'
+		                  +'<th colspan="2" style="background-color:#eeeeee; text-align: center;">게시글</th>'
+		                +'</tr>       '
+		              +'</thead>'
+		              +''
+		              +'<tbody>'
+		              +'<tr>'
+		              +'<td id="td1" style="width: 160px; text-align: center;">NO</td>'
+		              +'<td id="td_content1" style="text-align: left;"></td>'
+		            +'</tr>'
+		            +'<tr>'
+		            +'<td id="td2" style="width: 160px; text-align: center;">글제목</td>'
+		              +'<td id="td_content2" style="text-align: left;"></td>'
+		            +'</tr>'
+		            +'<tr>'
+		            +'<td id="td3" style="width: 160px; text-align: center;">작성자</td>'
+		              +'<td id="td_content3" style="text-align: left;"></td>'
+		            +'</tr>'
+		            +'<tr>'
+		            +'<td id="td4" style="width: 160px; text-align: center;">내용</td>'
+		              +'<td id="td_content4" style="text-align: left;"></td>'
+		            +'</tr>'
+		              +'</tbody>'
+	            +'</table>'
+	              +'<div id="btn_div" style="text-align: right;">'
+	                +'<button id="update_btn" class="btn btn-primary">수정</button>'
+	                +'<button id="delete_btn" class="btn btn-primary">삭제</button>'
+	              +'</div>'
+	          +'</div>'
+	         +'</div>'
+	      +'</div>';
+		return detailPage;
 	};
 	return{listBrd:listBrd,
 		addBrd:addBrd,

@@ -34,6 +34,7 @@ public class BoardController {
 		//페이지네이션
 		pagination.excute(map);
 		map.put("list", mapper.listBoard(map));
+		System.out.println("map.get(\"list\")결과 : "+map.get("list"));
 		return map;
 	};
 	@GetMapping("/detail/{num}")
@@ -41,8 +42,11 @@ public class BoardController {
 		logger.info(" detail() 진입 ");
 		Map<String,Object> map = new HashMap<>();
 		map.put("num", num);
-		logger.info(num);
-		logger.info("num"+map.get("num"));
+		logger.info("num : "+map.get("num"));
+		
+		map.put("detail", mapper.detailBoard(map));
+		logger.info("detail 결과 : "+map.get("detail"));
+		
 		
 		return map;
 	}
