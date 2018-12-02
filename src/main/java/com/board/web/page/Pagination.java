@@ -20,26 +20,25 @@ public class Pagination {
 
 public Map<?, ?> excute(Map<?, ?> p) {
 	Map<String, Object> pg = (Map<String, Object>) p;
+	
 	logger.info("페이지네이션 진입");
-	
 	int pageNum = Integer.parseInt((String) pg.get("pageNo"));
-	//int pageNum = 6;
-	
 	logger.info("pageNum : "+pageNum);
-	int blockSize = 5; // 1~5, 6~10
-	int pageSize = 5; 
-	int rowCount =mapper.countTotalContents(p); //총 게시물의 수
 	
-	int pageCount = (int) Math.ceil((double)rowCount / (double)pageSize); // 총페이지수
+	int blockSize = 5; // 1~5, 6~10
+	int rowSize = 5; 
+	
+	int rowCount =mapper.countTotalContents(p); //총 게시물의 수
+	int pageCount = (int) Math.ceil((double)rowCount / (double)rowSize); // 총페이지수
+	
 	int beginPage = (int) (Math.floor((double)(pageNum - 1) / (double)blockSize) * blockSize + 1); //시작페이지 숫자
-	//int blockNum = (int) Math.floor((double)beginPage / (double)blockSize + 1); // 1~5->blockNum:1
 	int endPage = (pageCount > (beginPage + blockSize-1)) ? (beginPage + blockSize-1) : pageCount; //마지막 페이지 숫자
 	
+	int beginRow = (pageNum - 1) * rowSize + 1;
+	int endRow = pageNum * rowSize;
+
 	int preBlock = endPage - blockSize;
 	int nextBlock = beginPage + blockSize;
-	
-	int beginRow = (pageNum - 1) * pageSize + 1;
-	int endRow = pageNum * pageSize;
 	
 	boolean existPrev = (beginPage!=1);
 	boolean existNext = (endPage<pageCount);

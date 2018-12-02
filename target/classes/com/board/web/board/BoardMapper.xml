@@ -17,7 +17,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	INSERT INTO T_BOARD (TITLE, CONTENT, WRITER, PW) 
 	VALUES (#{title}, #{content} ,#{writer},#{pw});
 </insert>
-
 <select id="listBoard"  resultMap="board">
 	SELECT NUM, TITLE, CONTENT, WRITER, PW, REGIDATE 
 	FROM (
@@ -30,6 +29,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		) T
 	WHERE ROWNUM BETWEEN #{beginRow} AND #{endRow}
 </select>
+<!-- 
+<select id="listBoard"  resultMap="board">
+	SELECT NUM, TITLE, CONTENT, WRITER, PW, REGIDATE 
+	FROM (
+		SELECT @ROWNUM:=@ROWNUM+1 as ROWNUM, A.*
+		FROM T_BOARD A, (SELECT @ROWNUM:=0) R
+		<if test="keyword!='undefined' and keyword!=''">
+		WHERE TITLE LIKE CONCAT('%', #{keyword}, '%')
+		</if>
+		ORDER BY NUM DESC
+		) T
+	WHERE ROWNUM BETWEEN #{beginRow} AND #{endRow}
+</select> -->
 
 <select id="detailBoard" resultType="com.board.web.board.Board">
 	SELECT NUM, TITLE, CONTENT, WRITER,PW, REGIDATE 

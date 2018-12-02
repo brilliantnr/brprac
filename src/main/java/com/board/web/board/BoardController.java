@@ -39,6 +39,26 @@ public class BoardController {
 		System.out.println("map.get(\"list\")결과 : "+map.get("list"));
 		return map;
 	};
+	
+	/*
+	 * 서치 조건 추가중 에러
+	 * @GetMapping("/list/{pageNo}/{keyword}/{con}")
+	public Map<String,Object> listBoard(@PathVariable String pageNo,
+			@PathVariable Object keyword,
+			@PathVariable String con) {
+		logger.info(" list() 진입 ");
+		Map<String,Object> map = new HashMap<>();
+		
+		map.put("pageNo", pageNo);
+		map.put("keyword", keyword);
+		map.put("con", con);
+		System.out.println("map.get keyword :  "+map.get("keyword"));
+		//페이지네이션
+		pagination.excute(map);
+		map.put("list", mapper.listBoard(map));
+		System.out.println("map.get(\"list\")결과 : "+map.get("list"));
+		return map;
+	};*/
 	@GetMapping("/detail/{num}")
 	public Map<String,Object> detailBoard(@PathVariable String num) {
 		logger.info(" detail() 진입 ");

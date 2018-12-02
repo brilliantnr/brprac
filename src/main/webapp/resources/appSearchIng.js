@@ -22,8 +22,40 @@ app.service=(()=>{
 	
 	var init=()=>{
 		console.log('step2 : app.service.init 진입'); 
+		//add();
+		
 		app.page.listBrd();
 		list({pageNum:1});
+		
+		/*
+		 버튼 모음 
+
+		$('#list_btn').click(e=>{
+			alert('버튼 클릭');
+			app.service.init();
+		});
+		$('#write_btn').click(e=>{
+			alert('글쓰기 버튼 클릭');
+			add();
+		});
+		$('#complete_btn').click(e=>{
+			alert('버튼 클릭');
+			app.service.init();
+		});
+		$('#update_btn').click(e=>{
+			alert('버튼 클릭');
+			//비밀번호 확인 과정 필요
+			app.page.detailBrd();
+		});
+		$('#delete_btn').click(e=>{
+			alert('버튼 클릭');
+			//비밀번호 확인 과정 필요
+			app.page.detailBrd();
+		});
+		*/
+
+		
+		
 		
 	};
 	var list=x=>{
@@ -37,7 +69,7 @@ app.service=(()=>{
 		console.log('x.pageNum : '+x.pageNum);
 		console.log('x.keyword : '+x.keyword);
 		//getJSON START========================================================================================================
-		$.getJSON($.ctx()+'/board/list/'+x.pageNum+'/'+x.keyword,d=>{
+		$.getJSON($.ctx()+'/board/list/'+x.pageNum+'/'+x.keyword+'/'+x.con,d=>{
 			console.log("getJSON 시작");
 			
 			$.each(d.list,(i,j)=>{
@@ -90,7 +122,7 @@ app.service=(()=>{
 								if(prev==''){
 									e.preventDefault();
 									console.log("d.preBlock : "+d.preBlock);
-									list({pageNum: d.preBlock, keyword:d.keyword});
+									list({pageNum: d.preBlock, keyword:d.keyword, con:$search_condition });
 								};
 							}).appendTo('#pg_ul');
 	
@@ -99,7 +131,7 @@ app.service=(()=>{
 				$('<li/>').append($('<a href="#"/>').html(i))
 				.click(e=>{
 					//페이지 클릭이벤트
-					app.service.list({pageNum:i, keyword:d.keyword});
+					app.service.list({pageNum:i, keyword:d.keyword, con:$search_condition});
 				})
 				.appendTo('#pg_ul');
 			};
@@ -111,7 +143,7 @@ app.service=(()=>{
 								if(next==''){
 									e.preventDefault();
 									console.log("d.nextBlock : "+d.nextBlock);
-									app.service.list({pageNum: d.nextBlock, keyword:d.keyword});
+									app.service.list({pageNum: d.nextBlock, keyword:d.keyword, con:$search_condition});
 								};
 							}).appendTo('#pg_ul');
 			
@@ -121,7 +153,7 @@ app.service=(()=>{
 	var add=()=>{
 		$('#wrapper').html(app.page.inputBrd());
 		$('#list_btn').click(e=>{
-			console.log('리스트 버튼 클릭');
+			console.lg('리스트 버튼 클릭');
 			$('#wrapper').empty();
      		$('#wrapper').append($('<div/>').attr({id : 'contents'}));
         	app.page.listBrd();
@@ -257,17 +289,6 @@ app.service=(()=>{
 	};
 	var validation=x=>{
 		console.log('validation 진입========');
-		
-		//1 . validation START ====================================================
-		
-		
-		
-		
-		
-	
-		
-		//1 . validation END ====================================================
-		
 		let pwInput = prompt("비밀번호를 입력하세요 ","비밀번호");
 		let $num = $('#td_content1').html();
 		console.log("arti_num : "+$num);
@@ -379,16 +400,23 @@ app.page=(()=>{
 		$('<button>').addClass("btn btn-default").attr({id:"search_btn",type:"button"}).click(e=>{
 			/* search 버튼 이벤트 */
 			console.log("서치 버튼 클릭");
+			let $search_condition = 'title'; //서버단으로 보낼 값
 			let $search_concept = $('#search_concept').html();
+			if($search_concept==='내용'){
+				console.log("$search_concept : "+$search_concept);
+				$search_condition='content';
+			};
+			
 			let $input_keyword = $('#input_keyword').val();
 			console.log("말머리 선택 : "+$search_concept);
 			console.log("검색 조건 : "+$input_keyword);
 			
 			if($input_keyword===''){
 				alert("검색어를 입력해주세요");
+				app.service.init();
 			}else{
 				//검색어 입력 완료시
-				app.service.list({pageNum:1, keyword:$input_keyword});
+				app.service.list({pageNum:1, keyword:$input_keyword, con:$search_condition});
 				
 			};
 			
@@ -511,4 +539,5 @@ app.page=(()=>{
 		inputBrd:inputBrd,
 		detailBrd,detailBrd};
 })();
+
 
